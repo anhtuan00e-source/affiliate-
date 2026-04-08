@@ -1,7 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 import { Outfit } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+function getAI() {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not set. Please add it to your environment variables.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+}
 
 export async function getStylistRecommendation(style: string, occasion: string, catalog: Outfit[]) {
   const prompt = `
@@ -22,6 +33,7 @@ export async function getStylistRecommendation(style: string, occasion: string, 
   `;
 
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,

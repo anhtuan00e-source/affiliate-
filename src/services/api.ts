@@ -30,8 +30,8 @@ export async function fetchData(sheetId: string): Promise<any[]> {
     // 2. If GID fails or returns invalid data, try common sheet names
     if (!csvData || csvData.trim().split('\n').length <= 1) {
       const names = sheetId === SHEETS.OUTFITS 
-        ? ['Trang tính 1', 'Trang_tính_1', 'Sheet1', 'Outfits']
-        : ['Trang tính 2', 'Trang_tính_2', 'Sheet2', 'Items'];
+        ? ['Trang tính 1', 'Trang_tính_1', 'Sheet1', 'Outfits', 'outfits']
+        : ['Trang tính 2', 'Trang_tính_2', 'Sheet2', 'Items', 'items'];
         
       for (const name of names) {
         const data = await tryFetch(name, false);
@@ -42,14 +42,14 @@ export async function fetchData(sheetId: string): Promise<any[]> {
       }
     }
     
-    // 3. Last resort fallback for Outfits
-    if (!csvData && sheetId === SHEETS.OUTFITS) {
+    // 3. Last resort fallback for Outfits (try GID 0)
+    if ((!csvData || csvData.trim().split('\n').length <= 1) && sheetId === SHEETS.OUTFITS) {
       csvData = await tryFetch('0', true);
     }
 
-    if (!csvData) {
-      console.error(`Failed to fetch data for sheetId: ${sheetId}`);
-      throw new Error('Could not fetch data from Google Sheets');
+    if (!csvData || csvData.trim().split('\n').length <= 1) {
+      console.warn(`No data found for sheetId: ${sheetId}`);
+      return []; // Return empty array instead of throwing
     }
     
     return new Promise<any[]>((resolve, reject) => {

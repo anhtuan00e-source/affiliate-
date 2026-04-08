@@ -15,16 +15,13 @@ export default function OutfitCard({ outfit }: Props) {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
       className="group"
     >
       <Link to={`/outfit/${outfit.id}`} className="block relative aspect-[3/4] overflow-hidden bg-zinc-900 rounded-2xl">
         <img
           src={outfit.ảnh || 'https://picsum.photos/seed/outfit/600/800'}
           alt={outfit.tên_outfit || `Outfit #${outfit.id}`}
-          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
           referrerPolicy="no-referrer"
         />
 

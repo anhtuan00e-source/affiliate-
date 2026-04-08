@@ -49,14 +49,25 @@ export default function Home() {
 
   if (error) {
     return (
-      <div className="pt-32 text-center text-red-500 font-bold uppercase tracking-widest text-xs px-6">
-        {error}
+      <div className="pt-32 flex flex-col items-center justify-center min-h-[60vh] px-6">
+        <div className="bg-red-500/10 border border-red-500/50 p-8 rounded-3xl max-w-md w-full text-center">
+          <p className="text-red-500 font-black uppercase tracking-widest text-sm mb-4">Lỗi tải dữ liệu</p>
+          <p className="text-zinc-400 text-xs mb-8 leading-relaxed">{error}</p>
+          <button 
+            onClick={() => loadData()}
+            className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-zinc-200 transition-all"
+          >
+            Thử lại ngay
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+      {/* Debug Info - Hidden in production but useful for now */}
+      <div className="hidden">Loaded: {outfits.length} outfits</div>
       {/* Hero Section - Minimal */}
       <section className="mb-20 text-center">
         <motion.div

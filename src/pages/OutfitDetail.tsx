@@ -142,7 +142,7 @@ export default function OutfitDetail() {
                         <img 
                           src={item.ảnh_sp || 'https://picsum.photos/seed/product/200/300'} 
                           alt={item.tên_sp} 
-                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
+                          className="w-full h-full object-cover transition-all duration-700" 
                           referrerPolicy="no-referrer" 
                         />
                       </div>

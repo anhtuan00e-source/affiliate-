@@ -11,34 +11,46 @@ export async function fetchData(sheetId: string): Promise<any[]> {
   const tryFetch = async (id: string, isGid: boolean) => {
     const param = isGid ? `gid=${id}` : `sheet=${encodeURIComponent(id)}`;
     const url = `${BASE_URL}&${param}&t=${Date.now()}`;
-    console.log(`Fetching: ${url}`);
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    return await res.text();
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const text = await res.text();
+      // If Google returns an HTML page instead of CSV, it's an error
+      if (text.includes('<!DOCTYPE html>') || text.includes('<html')) return null;
+      return text;
+    } catch (e) {
+      return null;
+    }
   };
 
   try {
-    // Try fetching by GID first as it is more reliable than sheet name
+    // 1. Try fetching by GID first
     let csvData = await tryFetch(sheetId, true);
     
-    // If GID fetch doesn't yield expected columns for items, try common sheet names
-    if (sheetId === SHEETS.ITEMS && (!csvData || !csvData.includes('link_mua'))) {
-      const names = ['Trang tính 2', 'Trang_tính_2', 'Sheet2', 'Items'];
+    // 2. If GID fails or returns invalid data, try common sheet names
+    if (!csvData || csvData.trim().split('\n').length <= 1) {
+      const names = sheetId === SHEETS.OUTFITS 
+        ? ['Trang tính 1', 'Trang_tính_1', 'Sheet1', 'Outfits']
+        : ['Trang tính 2', 'Trang_tính_2', 'Sheet2', 'Items'];
+        
       for (const name of names) {
         const data = await tryFetch(name, false);
-        if (data && data.includes('link_mua')) {
+        if (data && data.trim().split('\n').length > 1) {
           csvData = data;
           break;
         }
       }
     }
     
-    // If still no data, try GID 0 as last resort for outfits
+    // 3. Last resort fallback for Outfits
     if (!csvData && sheetId === SHEETS.OUTFITS) {
       csvData = await tryFetch('0', true);
     }
 
-    if (!csvData) throw new Error('Could not fetch data');
+    if (!csvData) {
+      console.error(`Failed to fetch data for sheetId: ${sheetId}`);
+      throw new Error('Could not fetch data from Google Sheets');
+    }
     
     return new Promise<any[]>((resolve, reject) => {
       Papa.parse(csvData!, {
@@ -54,17 +66,31 @@ export async function fetchData(sheetId: string): Promise<any[]> {
               }
             });
 
-            // ID Mapping
-            const idValue = normalizedRow.id || normalizedRow.ID || normalizedRow['mã'] || 
-                            normalizedRow['stt'] || normalizedRow.no || 
-                            normalizedRow.id_item || normalizedRow.outfit_id;
-            if (idValue) normalizedRow.id = idValue.replace('#', '').trim();
+            // ID Mapping - Be very aggressive in finding an ID
+            const idValue = normalizedRow.id || 
+                            normalizedRow.id_item || 
+                            normalizedRow.outfit_id || 
+                            normalizedRow['mã'] || 
+                            normalizedRow['stt'] || 
+                            normalizedRow.no ||
+                            normalizedRow.ID ||
+                            Object.values(normalizedRow)[0]; // Fallback to first column
             
-            // Foreign Key Mapping
-            const outfitIdValue = normalizedRow.outfit_id || normalizedRow.OUTFIT_ID || 
-                                  normalizedRow['mã outfit'] || normalizedRow['outfit id'] ||
-                                  normalizedRow['mã set'] || normalizedRow['set id'];
-            if (outfitIdValue) normalizedRow.outfit_id = outfitIdValue.replace('#', '').trim();
+            if (idValue) {
+              normalizedRow.id = idValue.toString().replace('#', '').trim();
+            }
+            
+            // Foreign Key Mapping for Items
+            const outfitIdValue = normalizedRow.outfit_id || 
+                                  normalizedRow['mã outfit'] || 
+                                  normalizedRow['outfit id'] ||
+                                  normalizedRow['mã set'] || 
+                                  normalizedRow['set id'] ||
+                                  normalizedRow.id?.split('-')[0]; // Try to derive from id_item (e.g. 1-1 -> 1)
+            
+            if (outfitIdValue) {
+              normalizedRow.outfit_id = outfitIdValue.toString().replace('#', '').trim();
+            }
 
             // Outfit Mapping (Sheet 1)
             if (!normalizedRow.ảnh && normalizedRow.image) normalizedRow.ảnh = normalizedRow.image;

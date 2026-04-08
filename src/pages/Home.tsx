@@ -83,11 +83,17 @@ export default function Home() {
       </section>
 
       {/* Grid - Focus on Images */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
-        {outfits.map(outfit => (
-          <OutfitCard key={outfit.id} outfit={outfit} />
-        ))}
-      </div>
+      {outfits.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+          {outfits.map(outfit => (
+            <OutfitCard key={outfit.id} outfit={outfit} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20">
+          <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Không tìm thấy Outfit nào. Hãy kiểm tra lại file Google Sheets.</p>
+        </div>
+      )}
     </div>
   );
 }

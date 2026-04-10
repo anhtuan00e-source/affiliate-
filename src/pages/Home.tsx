@@ -82,14 +82,6 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Bottom Right "AI STYLIST" */}
-                  <div className="absolute bottom-8 right-8">
-                    <div className="bg-white text-black px-6 py-3.5 rounded-full flex items-center gap-2.5 shadow-2xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-                      <Sparkles className="w-4 h-4 fill-black" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">AI Stylist</span>
-                    </div>
-                  </div>
-
                   {/* Bottom Gradient Overlay */}
                   <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>

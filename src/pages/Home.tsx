@@ -37,8 +37,8 @@ export default function Home() {
     <div className="min-h-screen bg-black text-white pt-24 px-6 pb-20">
       <div className="max-w-7xl mx-auto">
         <header className="mb-16 text-center">
-          <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">K-Style Curator</h1>
-          <p className="text-zinc-500 font-bold uppercase tracking-[0.3em] text-[10px]">Premium Outfit Selection</p>
+          <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">OUTFITHANQUOC</h1>
+          <p className="text-zinc-500 font-bold uppercase tracking-[0.3em] text-[10px]">PREMIUM K-STYLE CURATOR</p>
         </header>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">

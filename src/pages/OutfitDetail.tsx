@@ -214,7 +214,7 @@ export default function OutfitDetail() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 

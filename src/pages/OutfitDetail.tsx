@@ -159,7 +159,7 @@ export default function OutfitDetail() {
                 </div>
               </div>
 
-              <h1 className="text-5xl font-black uppercase tracking-tighter mb-4 leading-none">{outfit['tên_outfit'] || `Bộ phối #${outfit.id}`}</h1>
+              <h1 className="text-5xl font-black uppercase tracking-tighter mb-4 leading-none">{outfit['tên_outfit'] || `OUTFIT #${outfit.id}`}</h1>
               <p className="text-zinc-500 font-bold uppercase tracking-[0.3em] text-[10px] mb-12">{outfit['danh_mục'] || 'Premium Collection'}</p>
               
               {/* Items List */}

@@ -258,14 +258,6 @@ export default function OutfitDetail() {
                       </div>
                     </div>
 
-                    {/* Bottom Right "AI STYLIST" */}
-                    <div className="absolute bottom-6 right-6">
-                      <div className="bg-white text-black px-4 py-2.5 rounded-full flex items-center gap-2 shadow-xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-                        <Sparkles className="w-3 h-3 fill-black" />
-                        <span className="text-[8px] font-black uppercase tracking-widest">AI Stylist</span>
-                      </div>
-                    </div>
-
                     {/* Bottom Gradient Overlay */}
                     <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>

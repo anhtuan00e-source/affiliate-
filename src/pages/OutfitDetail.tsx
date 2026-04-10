@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, Share2, ArrowLeft, RefreshCcw } from 'lucide-react';
+import { Heart, Share2, ArrowLeft, RefreshCcw, Sparkles } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { useEffect, useState } from 'react';
 import { fetchData, SHEETS } from '../services/api';
@@ -83,7 +83,12 @@ export default function OutfitDetail() {
   const isSaved = savedOutfits.includes(outfit.id);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen bg-black text-white"
+    >
       <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <Link to="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest">
@@ -102,25 +107,46 @@ export default function OutfitDetail() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-24">
-          {/* Left: Image */}
+          {/* Left: Image with Hero Overlay */}
           <div className="lg:col-span-7">
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="aspect-[3/4] overflow-hidden bg-zinc-900 rounded-3xl"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="relative aspect-[3/4] overflow-hidden bg-zinc-900 rounded-3xl group"
             >
               <img 
                 src={outfit['ảnh'] || 'https://picsum.photos/seed/outfit/1200/1600'} 
                 alt={outfit['tên_outfit'] || `Outfit #${outfit.id}`} 
-                className="w-full h-full object-cover" 
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
                 referrerPolicy="no-referrer" 
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              {/* Hero ID Overlay - Styled like the screenshot */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                  className="bg-black/40 backdrop-blur-md px-8 py-4 border border-white/20 rounded-2xl"
+                >
+                  <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
+                    OUTFIT #{outfit.id}
+                  </h2>
+                </motion.div>
+              </div>
             </motion.div>
           </div>
 
           {/* Right: Details */}
           <div className="lg:col-span-5">
-            <div className="sticky top-24">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="sticky top-24"
+            >
               <div className="flex items-center justify-between mb-6">
                 <span className="text-zinc-500 font-mono text-[10px] uppercase tracking-widest">Mã số #{outfit.id}</span>
                 <div className="flex items-center gap-4">
@@ -133,17 +159,19 @@ export default function OutfitDetail() {
                 </div>
               </div>
 
-              <h1 className="text-4xl font-black uppercase tracking-tighter mb-8 leading-none">Mã: #{outfit.id}</h1>
+              <h1 className="text-5xl font-black uppercase tracking-tighter mb-4 leading-none">{outfit['tên_outfit'] || `Bộ phối #${outfit.id}`}</h1>
+              <p className="text-zinc-500 font-bold uppercase tracking-[0.3em] text-[10px] mb-12">{outfit['danh_mục'] || 'Premium Collection'}</p>
               
               {/* Items List */}
               <div className="space-y-4 mb-12">
                 <h3 className="text-[10px] font-bold uppercase text-white tracking-[0.3em] border-b border-zinc-800 pb-4 mb-6">Sản phẩm trong set</h3>
                 {items.length > 0 ? (
-                  items.map(item => (
+                  items.map((item, idx) => (
                     <motion.div 
                       key={item.id} 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + (idx * 0.1) }}
                       className="flex items-center justify-between group py-4 px-4 bg-zinc-900/30 hover:bg-zinc-900/60 border border-zinc-800/50 hover:border-zinc-700 transition-all rounded-2xl"
                     >
                       <div className="flex items-center gap-5">
@@ -197,29 +225,53 @@ export default function OutfitDetail() {
             <Link to="/" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Xem tất cả</Link>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {similarOutfits.map((item, index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                className="relative group"
               >
                 <Link 
                   to={`/outfit/${item.id}`}
-                  className="group block"
+                  className="block"
                 >
-                  <div className="aspect-[3/4] overflow-hidden bg-zinc-900 rounded-2xl mb-4 border border-zinc-800 group-hover:border-zinc-700 transition-colors">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 rounded-[2rem] border border-zinc-800 group-hover:border-zinc-700 transition-all shadow-xl">
                     <img 
                       src={item['ảnh'] || `https://picsum.photos/seed/outfit-${item.id}/800/1200`} 
                       alt={item['tên_outfit']} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
                       referrerPolicy="no-referrer" 
                     />
+
+                    {/* Top Left Badge */}
+                    <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                      <span className="text-[9px] font-black text-white/90">#{item.id}</span>
+                    </div>
+
+                    {/* Center "CHI TIẾT" Button */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <div className="bg-black/20 backdrop-blur-xl px-6 py-3 rounded-full border border-white/20 shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Chi tiết</span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Right "AI STYLIST" */}
+                    <div className="absolute bottom-6 right-6">
+                      <div className="bg-white text-black px-4 py-2.5 rounded-full flex items-center gap-2 shadow-xl transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+                        <Sparkles className="w-3 h-3 fill-black" />
+                        <span className="text-[8px] font-black uppercase tracking-widest">AI Stylist</span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Gradient Overlay */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
-                  <div className="px-1">
-                    <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-1.5">Mã: #{item.id}</p>
-                    <p className="text-xs font-bold text-zinc-300 group-hover:text-white transition-colors uppercase tracking-tight leading-tight">
+                  <div className="mt-4 px-2">
+                    <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-1">Mã: #{item.id}</p>
+                    <p className="text-sm font-black text-zinc-300 group-hover:text-white transition-colors uppercase tracking-tight leading-tight">
                       {item['tên_outfit'] || 'Outfit Gợi Ý'}
                     </p>
                   </div>
@@ -229,6 +281,6 @@ export default function OutfitDetail() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
